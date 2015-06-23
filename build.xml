@@ -1,0 +1,15 @@
+<project default="package">
+<target name="make-jar">
+    <javac
+            srcdir="out/production/commcare-api"
+            includeantruntime="false">
+        <classpath>
+            <path path="${javac.classpath}:${j2ee.platform.classpath}"/>
+        </classpath>
+    </javac>
+
+    <jar destfile="out/commcare-api.jar">
+        <fileset dir="out/production/commcare-api" includes="**/*.class"/>
+    </jar>
+</target>
+</project>
