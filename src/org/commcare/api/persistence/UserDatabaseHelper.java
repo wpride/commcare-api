@@ -8,10 +8,7 @@ import org.commcare.api.util.Pair;
 import org.javarosa.core.services.storage.IMetaData;
 import org.javarosa.core.services.storage.Persistable;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -176,6 +173,7 @@ public class UserDatabaseHelper {
         Pair<String, List<Object>> mPair = getTableInsertData(storageKey, p);
 
         System.out.println("mPair first: " + mPair.first);
+        System.out.println("mPair second: " + mPair.second);
 
         try {
             PreparedStatement preparedStatement = c.prepareStatement(mPair.first);
@@ -183,13 +181,14 @@ public class UserDatabaseHelper {
                 Object obj = mPair.second.get(i);
                 System.out.println("obj: " + obj.getClass());
                 if(obj instanceof String){
-                    preparedStatement.setString(i+1, (String)obj);
+                    preparedStatement.setString(i + 1, (String) obj);
                 } else if(obj instanceof Blob){
                     preparedStatement.setBlob(i+1, (Blob) obj);
                 } else if(obj instanceof Integer){
                     preparedStatement.setInt(i + 1, ((Integer) obj).intValue());
                 } else if(obj instanceof byte[]){
-                    preparedStatement.setBytes(i + 1, (byte[]) obj);
+                    System.out.println("byte: " + obj);
+                    preparedStatement.setBinaryStream(i+1,new ByteArrayInputStream((byte[]) obj), ((byte[]) obj).length);
                 }
             }
             preparedStatement.execute();
