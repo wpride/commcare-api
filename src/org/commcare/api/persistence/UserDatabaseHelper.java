@@ -125,7 +125,6 @@ public class UserDatabaseHelper {
         try {
             preparedStatement = c.prepareStatement(sqlStatement);
             boolean createdTable = preparedStatement.execute();
-            System.out.println("Table Created: " + createdTable + " sql statement: " + sqlStatement);
         } catch (SQLException e) {
             System.out.println("SQLE: " + e);
             e.printStackTrace();
@@ -141,14 +140,41 @@ public class UserDatabaseHelper {
     }
 
     public static void dropTable(Connection c, String storageKey){
-        String sqlStatement = "DROP TABLE " + storageKey;
+        String sqlStatement = "DROP TABLE IF EXISTS " + storageKey;
         try {
             PreparedStatement preparedStatement = c.prepareStatement(sqlStatement);
             preparedStatement.execute();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("didn't drop table");
+            //e.printStackTrace();
         }
     }
+
+    public static ResultSet executeSql(Connection c, String sqlQuery){
+        try {
+            PreparedStatement preparedStatement = c.prepareStatement(sqlQuery);
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ResultSet selectForId(Connection c, String storageKey, int id){
+        try {
+            PreparedStatement preparedStatement = c.prepareStatement("SELECT * FROM " + storageKey + " WHERE "
+                    + TableBuilder.ID_COL + " = ?;");
+            preparedStatement.setInt(1, id);
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public static ResultSet selectFromTable(Connection c, String storageKey, String[] fields, String[]values, Persistable p){
         TableBuilder mTableBuilder = new TableBuilder(storageKey);
@@ -172,14 +198,10 @@ public class UserDatabaseHelper {
     public static void insertToTable(Connection c, String storageKey, Persistable p){
         Pair<String, List<Object>> mPair = getTableInsertData(storageKey, p);
 
-        System.out.println("mPair first: " + mPair.first);
-        System.out.println("mPair second: " + mPair.second);
-
         try {
             PreparedStatement preparedStatement = c.prepareStatement(mPair.first);
             for(int i=0; i<mPair.second.size(); i++){
                 Object obj = mPair.second.get(i);
-                System.out.println("obj: " + obj.getClass());
                 if(obj instanceof String){
                     preparedStatement.setString(i + 1, (String) obj);
                 } else if(obj instanceof Blob){
@@ -187,7 +209,6 @@ public class UserDatabaseHelper {
                 } else if(obj instanceof Integer){
                     preparedStatement.setInt(i + 1, ((Integer) obj).intValue());
                 } else if(obj instanceof byte[]){
-                    System.out.println("byte: " + obj);
                     preparedStatement.setBinaryStream(i+1,new ByteArrayInputStream((byte[]) obj), ((byte[]) obj).length);
                 }
             }

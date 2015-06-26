@@ -9,6 +9,7 @@ import org.javarosa.core.util.DataUtil;
 import org.javarosa.core.util.InvalidIndexException;
 import org.javarosa.core.util.externalizable.DeserializationException;
 import org.javarosa.core.util.externalizable.PrototypeFactory;
+import java.util.Iterator;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -24,7 +25,7 @@ import java.util.*;
  *
  * @author wspride
  */
-public class SqlIndexedStorageUtility<T extends Persistable> implements IStorageUtilityIndexed<T> {
+public class SqlIndexedStorageUtility<T extends Persistable> implements IStorageUtilityIndexed<T>,Iterable<T>  {
 
     private Hashtable<String, Hashtable<Object, Vector<Integer>>> meta;
 
@@ -236,6 +237,21 @@ public class SqlIndexedStorageUtility<T extends Persistable> implements IStorage
         return 0;
     }
 
+    @Override
+    public SqlStorageIterator<T> iterate() {
+        Connection connection = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.getConnection();
+            resultSet = UserDatabaseHelper.executeSql(connection, "SELECT " + TableBuilder.ID_COL + " , " +
+                    TableBuilder.DATA_COL + " FROM " + this.tableName + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return new SqlStorageIterator<T>(resultSet, this.getNumRecords(), this);
+    }
+
     /* (non-Javadoc)
      * @see org.javarosa.core.services.storage.IStorageUtility#getTotalSize()
      */
@@ -251,30 +267,6 @@ public class SqlIndexedStorageUtility<T extends Persistable> implements IStorage
         return this.getNumRecords() > 0;
     }
 
-    /* (non-Javadoc)
-     * @see org.javarosa.core.services.storage.IStorageUtility#iterate()
-     */
-    public IStorageIterator<T> iterate() {
-        Connection connection = null;
-        ResultSet resultSet = null;
-        List<T> list = new ArrayList<T>();
-
-        try {
-            connection = this.getConnection();
-            resultSet = UserDatabaseHelper.executeSql(connection, "SELECT commcare_sql_id FROM " + this.tableName + ";");
-            while (resultSet.next()) {
-                byte[] mBytes = resultSet.getBytes(1);
-                T mT = readFromBytes(mBytes);
-                list.add(mT);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (resultSet != null) try { resultSet.close(); } catch (SQLException logOrIgnore) {}
-            if (connection != null) try { connection.close(); } catch (SQLException logOrIgnore) {}
-        }
-        return list.iterator();
-    }
 
     /* (non-Javadoc)
      * @see org.javarosa.core.services.storage.IStorageUtility#readBytes(int)
@@ -370,5 +362,10 @@ public class SqlIndexedStorageUtility<T extends Persistable> implements IStorage
 
     public void registerIndex(String filterIndex) {
         dynamicIndices.addElement(filterIndex);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return iterate();
     }
 }
