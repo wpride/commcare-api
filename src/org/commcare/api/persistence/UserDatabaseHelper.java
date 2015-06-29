@@ -96,7 +96,6 @@ public class UserDatabaseHelper {
         }
 
         values.put(DATA_COL, blob);
-        values.put(ID_COL, e.getID());
 
         return values;
     }
@@ -123,6 +122,7 @@ public class UserDatabaseHelper {
         String sqlStatement = getTableCreateString(storageKey, p);
         PreparedStatement preparedStatement = null;
         try {
+            System.out.println("Creating table statement: " + sqlStatement);
             preparedStatement = c.prepareStatement(sqlStatement);
             boolean createdTable = preparedStatement.execute();
         } catch (SQLException e) {
@@ -202,6 +202,7 @@ public class UserDatabaseHelper {
             PreparedStatement preparedStatement = c.prepareStatement(mPair.first);
             for(int i=0; i<mPair.second.size(); i++){
                 Object obj = mPair.second.get(i);
+
                 if(obj instanceof String){
                     preparedStatement.setString(i + 1, (String) obj);
                 } else if(obj instanceof Blob){
@@ -212,7 +213,21 @@ public class UserDatabaseHelper {
                     preparedStatement.setBinaryStream(i+1,new ByteArrayInputStream((byte[]) obj), ((byte[]) obj).length);
                 }
             }
-            preparedStatement.execute();
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating user failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    System.out.println("Setting id: " + generatedKeys.getInt(1));
+                    p.setID(generatedKeys.getInt(1));
+                }
+                else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
 
         } catch (SQLException e) {
             System.out.println("e: " + e);

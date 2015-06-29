@@ -25,7 +25,7 @@ public class SqlSandbox {
      * @param factory A prototype factory for deserializing records
      */
     public SqlSandbox(LivePrototypeFactory factory, String username) {
-        caseStorage = new SqlIndexedStorageUtility<Case>(Case.class, factory, username, "Case");
+        caseStorage = new SqlIndexedStorageUtility<Case>(Case.class, factory, username, "TFCase");
         ledgerStorage = new SqlIndexedStorageUtility<Ledger>(Ledger.class, factory, username, "Ledger");
         userStorage = new SqlIndexedStorageUtility<User>(User.class, factory, username, "User");
         userFixtureStorage = new SqlIndexedStorageUtility<FormInstance>(FormInstance.class, factory, username, "UserFixture");
