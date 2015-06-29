@@ -7,16 +7,11 @@ import org.commcare.cases.model.Case;
 import org.javarosa.core.model.instance.FormInstance;
 
 /**
- * A placeholder for the in-memory storage elements needed for an individual
- * CommCare user.
+ * A sandbox using SqlIndexedStorageUtility
  *
- * Uses a shared factory to appropriately manage prototype hashing, so can be
- * used as a reliable source of reads/writes for in-memory mocks of stoage
- * objects
- *
- * @author ctsims
+ * @author wspride
  */
-public class SqlUserDataSandbox {
+public class SqlSandbox {
     private final SqlIndexedStorageUtility<Case> caseStorage;
     private final SqlIndexedStorageUtility<Ledger> ledgerStorage;
     private final SqlIndexedStorageUtility<User> userStorage;
@@ -29,12 +24,12 @@ public class SqlUserDataSandbox {
      *
      * @param factory A prototype factory for deserializing records
      */
-    public SqlUserDataSandbox(LivePrototypeFactory factory, String username) {
-        caseStorage = new SqlIndexedStorageUtility<Case>(Case.class, factory, "Case", username);
-        ledgerStorage = new SqlIndexedStorageUtility<Ledger>(Ledger.class, factory, "Ledger", username);
-        userStorage = new SqlIndexedStorageUtility<User>(User.class, factory, "User", username);
-        userFixtureStorage = new SqlIndexedStorageUtility<FormInstance>(FormInstance.class, factory, "User-Fixture", username);
-        appFixtureStorage = new SqlIndexedStorageUtility<FormInstance>(FormInstance.class, factory, "App-Fixture", username);
+    public SqlSandbox(LivePrototypeFactory factory, String username) {
+        caseStorage = new SqlIndexedStorageUtility<Case>(Case.class, factory, username, "Case");
+        ledgerStorage = new SqlIndexedStorageUtility<Ledger>(Ledger.class, factory, username, "Ledger");
+        userStorage = new SqlIndexedStorageUtility<User>(User.class, factory, username, "User");
+        userFixtureStorage = new SqlIndexedStorageUtility<FormInstance>(FormInstance.class, factory, username, "UserFixture");
+        appFixtureStorage = new SqlIndexedStorageUtility<FormInstance>(FormInstance.class, factory, username, "AppFixture");
     }
 
     public SqlIndexedStorageUtility<Case> getCaseStorage() {
@@ -57,4 +52,3 @@ public class SqlUserDataSandbox {
         return appFixtureStorage;
     }
 }
-

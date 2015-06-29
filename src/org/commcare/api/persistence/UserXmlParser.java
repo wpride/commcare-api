@@ -16,11 +16,9 @@ import java.util.NoSuchElementException;
 public class UserXmlParser extends TransactionParser<User> {
 
     IStorageUtilityIndexed storage;
-    byte[] wrappedKey;
     
-    public UserXmlParser(org.kxml2.io.KXmlParser parser, byte[] wrappedKey, IStorageUtilityIndexed storage) {
+    public UserXmlParser(org.kxml2.io.KXmlParser parser, IStorageUtilityIndexed storage) {
         super(parser);
-        this.wrappedKey = wrappedKey;
         this.storage = storage;
     }
 
@@ -45,11 +43,9 @@ public class UserXmlParser extends TransactionParser<User> {
         
         if(u == null) {
             u = new User(username, passwordHash, uuid);
-            u.setWrappedKey(wrappedKey);
         } else {
             if(passwordHash != null && !passwordHash.equals(u.getPassword())) {
                 u.setPassword(passwordHash);
-                u.setWrappedKey(wrappedKey);
             } 
         }
         
