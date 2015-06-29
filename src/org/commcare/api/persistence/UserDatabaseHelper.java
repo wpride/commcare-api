@@ -221,7 +221,6 @@ public class UserDatabaseHelper {
 
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    System.out.println("Setting id: " + generatedKeys.getInt(1));
                     p.setID(generatedKeys.getInt(1));
                 }
                 else {

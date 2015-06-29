@@ -152,7 +152,7 @@ public class SqlIndexedStorageUtility<T extends Persistable> implements IStorage
             ResultSet rs = UserDatabaseHelper.selectFromTable(c, this.tableName,
                     new String[]{fieldName}, new String[]{(String)value}, prototype.newInstance());
             if(!rs.next()){
-                return null;
+                throw new NoSuchElementException();
             }
             byte[] mBytes = rs.getBytes(TableBuilder.DATA_COL);
             c.close();
