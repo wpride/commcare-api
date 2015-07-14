@@ -19,8 +19,7 @@ import org.javarosa.xml.util.InvalidStructureException;
 import org.javarosa.xml.util.UnfullfilledRequirementsException;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Vector;
 
 /**
@@ -95,7 +94,7 @@ public class UserDataUtils {
      * @param userId
      * @return
      */
-    private static FormInstance loadFixture(SqlSandbox sandbox,
+    public static FormInstance loadFixture(SqlSandbox sandbox,
                                             String refId, String userId) {
         IStorageUtilityIndexed<FormInstance> userFixtureStorage =
                 sandbox.getUserFixtureStorage();

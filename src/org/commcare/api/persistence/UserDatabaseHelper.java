@@ -196,6 +196,9 @@ public class UserDatabaseHelper {
     }
 
     public static void insertToTable(Connection c, String storageKey, Persistable p){
+
+        System.out.println("inserting to table: " + p);
+
         Pair<String, List<Object>> mPair = getTableInsertData(storageKey, p);
 
         try {
