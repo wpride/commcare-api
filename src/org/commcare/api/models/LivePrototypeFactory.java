@@ -1,6 +1,6 @@
 package org.commcare.api.models;
 
-import org.commcare.api.util.DefaultHasher;
+import org.commcare.api.util.NameHasher;
 import org.javarosa.core.util.externalizable.ExtUtil;
 import org.javarosa.core.util.externalizable.Hasher;
 import org.javarosa.core.util.externalizable.PrototypeFactory;
@@ -25,7 +25,7 @@ public class LivePrototypeFactory extends PrototypeFactory implements Hasher {
     private final Hasher mPassThroughHasher;
 
     public LivePrototypeFactory() {
-        this(new DefaultHasher());
+        this(new NameHasher());
     }
 
     private LivePrototypeFactory(Hasher hasher) {
@@ -58,5 +58,10 @@ public class LivePrototypeFactory extends PrototypeFactory implements Hasher {
         byte[] hash = mPassThroughHasher.getClassHashValue(type);
         factoryTable.put(ExtUtil.printBytes(hash), type);
         return hash;
+    }
+
+    @Override
+    public int getHashSize(){
+        return mPassThroughHasher.getHashSize();
     }
 }
