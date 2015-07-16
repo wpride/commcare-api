@@ -1,7 +1,6 @@
 package org.commcare.api.util;
 
 import org.commcare.api.models.CommCareTransactionParserFactory;
-import org.commcare.api.models.LivePrototypeFactory;
 import org.commcare.api.models.User;
 import org.commcare.api.persistence.SqlSandbox;
 import org.commcare.data.xml.DataModelPullParser;
@@ -19,7 +18,8 @@ import org.javarosa.xml.util.InvalidStructureException;
 import org.javarosa.xml.util.UnfullfilledRequirementsException;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Vector;
 
 /**
@@ -33,9 +33,15 @@ import java.util.Vector;
 public class UserDataUtils {
 
     public static SqlSandbox getStaticStorage(String username) {
-        LivePrototypeFactory factory = new LivePrototypeFactory();
-        PrototypeFactory.setStaticHasher(factory);
+        PrototypeFactory factory = new PrototypeFactory();
+        PrototypeFactory.setStaticHasher(new NameHasher());
         return new SqlSandbox(factory, username);
+    }
+
+    public static SqlSandbox getClearedStaticStorage(String username) {
+        PrototypeFactory factory = new PrototypeFactory();
+        PrototypeFactory.setStaticHasher(new NameHasher());
+        return new SqlSandbox(factory, username, true);
     }
 
     public static void parseIntoSandbox(InputStream stream, SqlSandbox sandbox) {

@@ -122,7 +122,6 @@ public class UserDatabaseHelper {
         String sqlStatement = getTableCreateString(storageKey, p);
         PreparedStatement preparedStatement = null;
         try {
-            System.out.println("Creating table statement: " + sqlStatement);
             preparedStatement = c.prepareStatement(sqlStatement);
             boolean createdTable = preparedStatement.execute();
         } catch (SQLException e) {
@@ -196,8 +195,6 @@ public class UserDatabaseHelper {
     }
 
     public static void insertToTable(Connection c, String storageKey, Persistable p){
-
-        System.out.println("inserting to table: " + p);
 
         Pair<String, List<Object>> mPair = getTableInsertData(storageKey, p);
 

@@ -43,12 +43,6 @@ public class LivePrototypeFactory extends PrototypeFactory implements Hasher {
     }
 
     @Override
-    public Class getClass(byte[] hash) {
-        String key = ExtUtil.printBytes(hash);
-        return factoryTable.get(key);
-    }
-
-    @Override
     public Object getInstance(byte[] hash) {
         return PrototypeFactory.getInstance(getClass(hash));
     }

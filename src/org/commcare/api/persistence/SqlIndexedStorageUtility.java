@@ -49,24 +49,18 @@ public class SqlIndexedStorageUtility<T extends Persistable> implements IStorage
         this.userName = userName;
         this.prototype = prototype;
         this.mFactory = factory;
-        Connection c = null;
 
-        try {
-            Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:"+ this.userName + ".db");
-            UserDatabaseHelper.dropTable(c, tableName);
-            UserDatabaseHelper.createTable(c, tableName, prototype.newInstance());
-            c.close();
-
-        } catch(Exception e){
-            System.out.println("Got exception creating table: " + tableName + " e: " + e);
-            e.printStackTrace();
-        }
-
+        //resetTable();
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:"+ this.userName + ".db");
+        try {
+            Class.forName("org.sqlite.JDBC");
+            return DriverManager.getConnection("jdbc:sqlite:" + this.userName + ".db");
+        } catch(Exception e){
+            System.out.println("couldn't get jdbc sqlite driver");
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -79,6 +73,22 @@ public class SqlIndexedStorageUtility<T extends Persistable> implements IStorage
             UserDatabaseHelper.insertToTable(c, tableName, p);
             c.close();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetTable(){
+        Connection c = null;
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:"+ this.userName + ".db");
+            UserDatabaseHelper.dropTable(c, tableName);
+            UserDatabaseHelper.createTable(c, tableName, prototype.newInstance());
+            c.close();
+
+        } catch(Exception e){
+            System.out.println("Got exception creating table: " + tableName + " e: " + e);
             e.printStackTrace();
         }
     }
