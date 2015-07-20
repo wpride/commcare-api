@@ -20,6 +20,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Vector;
 
 /**
@@ -49,10 +50,16 @@ public class UserDataUtils {
         try {
             DataModelPullParser parser = new DataModelPullParser(stream, factory);
             parser.parse();
+            sandbox.updateLastSync();
         } catch (IOException | UnfullfilledRequirementsException |
                 XmlPullParserException | InvalidStructureException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    public static Date getLastSync(String username){
+        SqlSandbox mSandbox = getStaticStorage(username);
+        return mSandbox.getLastSync();
     }
 
     /**
